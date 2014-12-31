@@ -1,6 +1,6 @@
 /*****************************
             OPTIQUE
-              v0.6
+              v1.0
 
     (d'après une idée de K)
 
@@ -33,8 +33,16 @@ public:
 
     double rtrnFocale(int indiceLentille);
     double rtrnPosition(int indiceLentille);
+    double rtrnAngle(int indiceRayon);
+    double rtrnOrdo(int indiceRayon);
     //~Graphic();
+    void ajouterLentille(double focale, double position);
     void changerLentille(int ind, double foc, double pos);
+    void supprimerLentille(int ind);
+
+    void ajouterRayon(double angle, double ord);
+    void changerRayon(int ind, double ang, double ord);
+    void supprimerRayon(int ind);
     
 signals:
     

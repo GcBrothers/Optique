@@ -1,6 +1,6 @@
 /*****************************
             OPTIQUE
-              v0.6
+              v1.0
 
     (d'après une idée de K)
 
@@ -33,6 +33,7 @@ Graphic::Graphic()
     /* ------------------- Ajout des rayons "de base" ------------------------*/
 
     m_rayons->push_back(Rayon(0,0.1));
+    m_rayons->push_back(Rayon(0,0.5));
 
     /* ------------------- Affichage des axes --------------------------------*/
 
@@ -86,7 +87,7 @@ void Graphic::dessinerSchema()
 {
     QPen pen;
     pen.setColor(Qt::red);
-    pen.setWidth(4);
+    pen.setWidth(2);
 
     Rayon *tempR = m_rayons->data();
     Lentille *tempL = m_lenses->data();
@@ -149,7 +150,7 @@ double Graphic::rtrnFocale(int indiceLentille)
     }
     else
     {
-        return -1;
+        return 1;
     }
 }
 
@@ -166,17 +167,108 @@ double Graphic::rtrnPosition(int indiceLentille)
     }
 }
 
-void Graphic::changerLentille(int ind, double foc, double pos)
+double Graphic::rtrnAngle(int indiceRayon)
 {
-    m_lenses->remove(ind);
+    if(indiceRayon >= 0 && indiceRayon < m_rayons->size())
+    {
+        Rayon *temp = m_rayons->data();
+        return temp[indiceRayon].retourneCoef()*45;
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+double Graphic::rtrnOrdo(int indiceRayon)
+{
+    if(indiceRayon >= 0 && indiceRayon < m_rayons->size())
+    {
+        Rayon *temp = m_rayons->data();
+        return temp[indiceRayon].retourneOrdo();
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void Graphic::ajouterLentille(double focale, double position)
+{
     Lentille *temp = m_lenses->data();
     int i = 0;
-    while (pos > temp[i].retournePos() && i < m_lenses->size())
+    while (position > temp[i].retournePos() && i < m_lenses->size()) //Ajouter la lentille au bon endroit pour que ça soit trié
     {
         i++;
     }
-    m_lenses->insert(i, Lentille(foc, pos));
+    m_lenses->insert(i, Lentille(focale, position));
 
+    //on efface...
+    m_scene->clear();
+    //... et on redessine tout !
+    this->dessinerAxes();
+    this->dessinerLentilles();
+    this->dessinerSchema();
+}
+
+void Graphic::changerLentille(int ind, double foc, double pos)
+{
+    if(ind >= 0 && ind < m_lenses->size())
+    {
+        m_lenses->remove(ind);
+        Lentille *temp = m_lenses->data();
+        int i = 0;
+        while (pos > temp[i].retournePos() && i < m_lenses->size())
+        {
+            i++;
+        }
+        m_lenses->insert(i, Lentille(foc, pos));
+
+        //on efface...
+        m_scene->clear();
+        //... et on redessine tout !
+        this->dessinerAxes();
+        this->dessinerLentilles();
+        this->dessinerSchema();
+    }
+}
+
+void Graphic::supprimerLentille(int ind)
+{
+    if(ind >= 0 && ind < m_lenses->size())
+    {
+        m_lenses->remove(ind);
+        //on efface...
+        m_scene->clear();
+        //... et on redessine tout !
+        this->dessinerAxes();
+        this->dessinerLentilles();
+        this->dessinerSchema();
+    }
+}
+
+void Graphic::ajouterRayon(double angle, double ord)
+{
+    m_rayons->push_back(Rayon(angle, ord));
+    //... et on redessine tout !
+    this->dessinerSchema();
+}
+
+void Graphic::changerRayon(int ind, double ang, double ord)
+{
+    Rayon *temp = m_rayons->data();
+    temp[ind] = Rayon(ang,ord);
+    //on efface...
+    m_scene->clear();
+    //... et on redessine tout !
+    this->dessinerAxes();
+    this->dessinerLentilles();
+    this->dessinerSchema();
+}
+
+void Graphic::supprimerRayon(int ind)
+{
+    m_rayons->remove(ind);
     //on efface...
     m_scene->clear();
     //... et on redessine tout !
