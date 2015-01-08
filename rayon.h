@@ -9,6 +9,8 @@
 #ifndef RAYON_H
 #define RAYON_H
 
+#include <iostream>
+
 class Rayon
 {
 public:
@@ -19,6 +21,7 @@ private:
     //Attention l'axe des abcisses est orienté VERS LE BAS
     double *m_angle; //EN DEGRES
     double *m_ordoALOrigine;
+    double pi;
 };
 
 #endif // RAYON_H

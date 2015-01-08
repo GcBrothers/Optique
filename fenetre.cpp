@@ -174,6 +174,7 @@ void Fenetre::ajRayon()
 void Fenetre::modRayon()
 {
     m_graph->changerRayon(m_rayonsList->currentIndex(), m_angle->text().toDouble(), m_ordo->text().toDouble());
+    this->majRayons();
 }
 void Fenetre::suppRayon()
 {

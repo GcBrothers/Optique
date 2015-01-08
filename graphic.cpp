@@ -7,6 +7,7 @@
 ******************************/
 
 #include "graphic.h"
+#include "math.h"
 
 Graphic::Graphic()
 {
@@ -19,6 +20,7 @@ Graphic::Graphic()
     double f2 = 0.125;
     double x0 = 0.200;
 
+    m_scene->setBackgroundBrush(Qt::black);
     /* ------------------- Ajout des lentilles "de base" ---------------------*/
     /* /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\ /!\
      Si vous modifiez ces lentilles, veillez à les rentrer TRIEES par POSITIONS
@@ -33,7 +35,7 @@ Graphic::Graphic()
     /* ------------------- Ajout des rayons "de base" ------------------------*/
 
     m_rayons->push_back(Rayon(0,0.1));
-    m_rayons->push_back(Rayon(0,0.5));
+    m_rayons->push_back(Rayon(0,0.2));
 
     /* ------------------- Affichage des axes --------------------------------*/
 
@@ -56,8 +58,10 @@ void Graphic::dessinerAxes()
     vertAxe.setWidth(3);
     vertAxe.setColor(Qt::green);
 
+    Lentille *temp = m_lenses->data();
+    double longueur = 200 + 1000 * temp[m_lenses->size()-1].retournePos();
     m_scene->addLine(0,0,0,400,vertAxe);
-    m_scene->addLine(0,0,2000,0,vertAxe);
+    m_scene->addLine(0,0,longueur,0,vertAxe);
 }
 
 void Graphic::dessinerLentilles()
@@ -68,13 +72,9 @@ void Graphic::dessinerLentilles()
     //std::cout << "size = " << m_lenses->size() << "," << temp[1].retournePos() << std::endl;
     QPen pen;
     QBrush bru;
-    QColor col;
     bru.setStyle(Qt::CrossPattern);
     pen.setBrush(bru);
-    col.setBlue(90);
-    col.setRed(5);
-    col.setGreen(5);
-    pen.setColor(col);
+    pen.setColor(Qt::darkBlue);
     pen.setWidth(10);
     for(i=0;i<m_lenses->size();i++)
     {
@@ -123,7 +123,8 @@ void Graphic::dessinerSchema()
             }
 
             double nveauCoef = (-(m*(l.retournePos()-l.retourneFocale()) + p))/l.retourneFocale();
-            r = Rayon(nveauCoef*45, m*l.retournePos() + p - nveauCoef*l.retournePos());
+            //r = Rayon(nveauCoef*45, m*l.retournePos() + p - nveauCoef*l.retournePos());
+	    r = Rayon(atan(nveauCoef)*180/3.1415926535897932, m*l.retournePos() + p - nveauCoef*l.retournePos());
         }
         m = r.retourneCoef();
         p = r.retourneOrdo();
@@ -172,7 +173,8 @@ double Graphic::rtrnAngle(int indiceRayon)
     if(indiceRayon >= 0 && indiceRayon < m_rayons->size())
     {
         Rayon *temp = m_rayons->data();
-        return temp[indiceRayon].retourneCoef()*45;
+        //return temp[indiceRayon].retourneCoef()*45;
+	return atan(temp[indiceRayon].retourneCoef())*180/3.14159265358979323;
     }
     else
     {
@@ -249,7 +251,7 @@ void Graphic::supprimerLentille(int ind)
 
 void Graphic::ajouterRayon(double angle, double ord)
 {
-    m_rayons->push_back(Rayon(angle, ord));
+    m_rayons->push_front(Rayon(angle, ord));
     //... et on redessine tout !
     this->dessinerSchema();
 }
